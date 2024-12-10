@@ -1,0 +1,12 @@
+{
+    "entities": [
+      {
+        "name": "Lei 61/2008, de 31/10",
+        "url": "http://example.com/lei61"
+      },
+      {
+        "name": "artigo 1775° do Código Civil",
+        "url": "http://example.com/artigo1775"
+      }
+    ]
+}  
