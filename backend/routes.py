@@ -1,5 +1,5 @@
 from flask import Blueprint
-from backend.controllers.documents import get_documents, get_document_by_id, delete_document
+from controllers.documents import get_documents, get_document_by_id, delete_document
 
 api_blueprint = Blueprint('api', __name__)
 

@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
-from backend.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
-from backend.routes import api_blueprint
-from backend.database import db
+from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
+from routes import api_blueprint
+from database import db
 
 
 def create_app():

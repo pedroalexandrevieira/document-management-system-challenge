@@ -1,4 +1,4 @@
-from backend.database import db
+from database import db
 from sqlalchemy import Date, TIMESTAMP
 
 class Document(db.Model):

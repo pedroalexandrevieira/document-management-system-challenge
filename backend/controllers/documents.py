@@ -1,6 +1,6 @@
 from flask import jsonify
-from backend.models import Document
-from backend.database import db
+from models import Document
+from database import db
 
 
 def get_documents():
