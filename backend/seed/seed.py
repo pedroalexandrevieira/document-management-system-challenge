@@ -1,3 +1,4 @@
+import os
 import json
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -88,10 +89,23 @@ def process_html_and_json(html_path, json_path):
 
 
 if __name__ == "__main__":
-    # Paths to the sample HTML and JSON files
-    html_file = './backend/seed/sample_document.html'
-    json_file = './backend/seed/sample_document.json'
+    # Directories containing HTML and JSON files
+    html_dir = './backend/seed/html/'
+    json_dir = './backend/seed/json/'
 
+    # Create database tables
     with app.app_context():
         db.create_all()
-        process_html_and_json(html_file, json_file)
+
+    # Process all files in the directories
+    for html_file in os.listdir(html_dir):
+        if html_file.endswith('.html'):
+            html_path = os.path.join(html_dir, html_file)
+            json_file = html_file.replace('.html', '.json')  # Matching JSON filename
+            json_path = os.path.join(json_dir, json_file)
+
+            if os.path.exists(json_path):
+                print(f"Processing: {html_file} and {json_file}")
+                process_html_and_json(html_path, json_path)
+            else:
+                print(f"Missing JSON file for: {html_file}")
