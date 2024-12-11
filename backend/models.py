@@ -1,4 +1,4 @@
-from database import db
+from backend.database import db
 from sqlalchemy import Date, TIMESTAMP
 
 class Document(db.Model):
@@ -14,6 +14,7 @@ class Document(db.Model):
     decision = db.Column(db.String(255))  # decision (varchar(255))
     date = db.Column(Date)  # date (date)
     created_at = db.Column(TIMESTAMP)  # created_at (timestamp)
+    tags = db.Column(db.Text) 
 
     # Relationship to Entity
     entities = db.relationship('Entity', backref='document', cascade="all, delete")

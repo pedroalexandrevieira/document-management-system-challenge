@@ -3,9 +3,9 @@ import json
 from bs4 import BeautifulSoup
 from datetime import datetime
 from flask import Flask
-from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
-from database import db
-from models import Document, Entity
+from backend.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
+from backend.database import db
+from backend.models import Document, Entity
 
 # Define field mapping for Portuguese to English schema
 FIELD_MAPPING = {
@@ -14,7 +14,7 @@ FIELD_MAPPING = {
     "tribunal": "court",
     "decisão": "decision",
     "data": "date",
-    "descritores": "tags",
+    "descritores": "tags",  # Tags field added for metadata
     "sumário": "summary",
     "conteúdo": "content",
     "título": "title"
@@ -29,7 +29,7 @@ db.init_app(app)
 def process_html_and_json(html_path, json_path):
     """Processes an HTML and JSON file to extract document data and save it to the database."""
     # Parse the HTML file
-    with open(html_path, 'r', encoding='utf-8') as f:
+    with open(html_path, 'r', encoding='ISO-8859-1') as f:
         html_content = f.read()
     soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -61,15 +61,15 @@ def process_html_and_json(html_path, json_path):
     # Save document and entities to the database
     with app.app_context():
         doc = Document(
-            process_number=extracted_data.get("process_number"),
-            title=extracted_data.get("title"),
-            relator=extracted_data.get("relator"),
-            court=extracted_data.get("court"),
-            decision=extracted_data.get("decision"),
+            process_number=extracted_data.get("process_number", ""),
+            title=extracted_data.get("title", ""),
+            relator=extracted_data.get("relator", ""),
+            court=extracted_data.get("court", ""),
+            decision=extracted_data.get("decision", ""),
             date=extracted_data.get("date"),
-            tags=extracted_data.get("tags"),
-            summary=extracted_data.get("summary"),
-            content=extracted_data.get("content")
+            tags=extracted_data.get("tags", ""),  # Ensure tags are stored correctly
+            summary=extracted_data.get("summary", ""),
+            content=extracted_data.get("content", "")
         )
         db.session.add(doc)
         db.session.commit()
@@ -80,7 +80,7 @@ def process_html_and_json(html_path, json_path):
                 document_id=doc.id,
                 name=ent['name'],
                 label=ent.get('label', ''),
-                url=ent['url']
+                url=ent.get('url', '')
             )
             db.session.add(entity)
 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     for html_file in os.listdir(html_dir):
         if html_file.endswith('.html'):
             html_path = os.path.join(html_dir, html_file)
-            json_file = html_file.replace('.html', '.json')  # Matching JSON filename
+            json_file = html_file.replace('.html', '.json')
             json_path = os.path.join(json_dir, json_file)
 
             if os.path.exists(json_path):
