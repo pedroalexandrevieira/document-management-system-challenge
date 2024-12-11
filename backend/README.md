@@ -49,18 +49,18 @@ The backend processes legal documents in the form of HTML and JSON files:
 
 ## Project Structure
 
-```plaintext
-backend/
-├── app.py                    # Flask application entry point
-├── models.py                 # SQLAlchemy models for Document and Entity
-├── database.py               # Database configuration and initialization
-├── config.py                 # Application configuration (e.g., database URI)
-├── seed/
-│   ├── html/                 # Directory for HTML files
-│   ├── json/                 # Directory for JSON files
-├── requirements.txt          # Python dependencies
-├── Dockerfile                # Docker configuration
-├── README.md                 # Project documentation
+-  backend/
+  ├── app.py                    # Flask application entry point
+  ├── models.py                 # SQLAlchemy models for Document and Entity
+  ├── database.py               # Database configuration and initialization
+  ├── config.py                 # Application configuration (e.g., database URI)
+  ├── seed/
+  │   ├── html/                 # Directory for HTML files
+  │   ├── json/                 # Directory for JSON files
+  ├── requirements.txt          # Python dependencies
+  ├── Dockerfile                # Docker configuration
+  ├── README.md                 # Project documentation
+
 
 ---
 
@@ -143,3 +143,42 @@ docker run -d -p 5000:5000 --name dms-backend dms-backend
 |-------------|----------------------|-----------------------------|
 | `GET`       | `/entities`          | Fetch all entities          |
 | `GET`       | `/entities/<id>`     | Fetch a specific entity     |
+
+
+---
+
+## Logs and Debugging
+
+  Logs all batch processing, database transactions, and API requests.
+  Errors such as missing fields, unmatched files, or database constraints are logged for debugging.
+
+---
+
+## Example Output
+
+### Batch Processing
+
+   When processing `doc1.html` and `doc1.json`:
+  - Processing: doc1.html and doc1.json
+  - Seeded document with ID: 1
+  
+
+### API Response
+
+  -Example `GET /documents` response:
+
+  ```json
+  [
+    {
+      "id": 1,
+      "process_number": "12345",
+      "title": "Court Ruling Title",
+      "relator": "Relator Name",
+      "court": "Supreme Court",
+      "decision": "Decision text",
+      "date": "2024-01-01",
+      "tags": "tag1, tag2",
+      "summary": "Brief summary of the decision",
+      "content": "Full document content"
+    }
+  ]
