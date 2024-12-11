@@ -47,23 +47,6 @@ The backend processes legal documents in the form of HTML and JSON files:
 
 ---
 
-## Project Structure
-
--  backend/
-  ├── app.py                    # Flask application entry point
-  ├── models.py                 # SQLAlchemy models for Document and Entity
-  ├── database.py               # Database configuration and initialization
-  ├── config.py                 # Application configuration (e.g., database URI)
-  ├── seed/
-  │   ├── html/                 # Directory for HTML files
-  │   ├── json/                 # Directory for JSON files
-  ├── requirements.txt          # Python dependencies
-  ├── Dockerfile                # Docker configuration
-  ├── README.md                 # Project documentation
-
-
----
-
 ## Prerequisites
 
 To run this project, you need the following:
@@ -80,16 +63,19 @@ To run this project, you need the following:
 ## Installation
 
 1. **Create a Virtual Environment**:
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   
+   - python3 -m venv venv
+   - source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 2. **Install Dependencies**:
-  pip install -r requirements.txt
   
-3.**Configure the Database**:
-  Open config.py and set SQLALCHEMY_DATABASE_URI to point to your PostgreSQL database.
+   - pip install -r requirements.txt
+  
+3. **Configure the Database**:
+  
+   - Open config.py and set SQLALCHEMY_DATABASE_URI to point to your PostgreSQL database.
 
-4.**Initialize the Database**:
+4. **Initialize the Database**:
   flask shell
   >>> from database import db
   >>> db.create_all()
@@ -147,18 +133,12 @@ docker run -d -p 5000:5000 --name dms-backend dms-backend
 
 ---
 
-## Logs and Debugging
-
-  Logs all batch processing, database transactions, and API requests.
-  Errors such as missing fields, unmatched files, or database constraints are logged for debugging.
-
----
-
 ## Example Output
 
 ### Batch Processing
 
-   When processing `doc1.html` and `doc1.json`:
+When processing `doc1.html` and `doc1.json`:
+
   - Processing: doc1.html and doc1.json
   - Seeded document with ID: 1
   
