@@ -71,6 +71,49 @@ def extract_created_at():
     """Return the current timestamp as created_at."""
     return datetime.now()
 
+def clean_main_text(raw_text):
+    """
+    Clean and normalize main text extracted from the HTML.
+    This function removes unnecessary characters, normalizes spaces, and performs additional cleaning.
+    """
+    # Replace common HTML entities
+    cleaned_text = (
+        raw_text.replace('&nbsp;', ' ')
+        .replace('&#x2019;', "'")
+        .replace('&#x201c;', '"')
+        .replace('&#x201d;', '"')
+        .replace('&amp;', '&')
+        .replace('\u00a0', ' ')
+        .replace('\u2026', '...')  # Ellipsis
+        .replace('\u2013', '-')  # En dash
+        .replace('\u2014', '--')  # Em dash
+    )
+
+    # Normalize line breaks
+    cleaned_text = cleaned_text.replace('\r\n', '\n').replace('\r', '\n')
+
+    # Remove extra spaces, tabs, and normalize multiple line breaks
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text)  # Replace multiple spaces with a single space
+    cleaned_text = re.sub(r'\n+', '\n', cleaned_text)  # Replace multiple newlines with a single newline
+
+    # Remove any unwanted headers, footers, or metadata markers if applicable
+    # For example, removing repetitive page headers
+    cleaned_text = re.sub(r'^Page \d+\s*', '', cleaned_text, flags=re.MULTILINE)
+    cleaned_text = re.sub(r'^\s*-+\s*$', '', cleaned_text, flags=re.MULTILINE)  # Remove horizontal lines
+
+    # Remove common artifacts, such as HTML tags or placeholders left in the text
+    cleaned_text = re.sub(r'<[^>]+>', '', cleaned_text)  # Remove remaining HTML tags
+    cleaned_text = re.sub(r'\[.*?\]', '', cleaned_text)  # Remove text within brackets, e.g., "[See Footnote]"
+
+    # Remove leading and trailing whitespace
+    cleaned_text = cleaned_text.strip()
+
+    # Additional processing specific to your dataset
+    # For instance, removing custom headers or identifying specific patterns
+    cleaned_text = re.sub(r'Document ID: \d+', '', cleaned_text)  # Example: remove document identifiers
+
+    return cleaned_text
+
 def process_html_and_json(html_path, json_path):
     """Processes an HTML and JSON file to extract document data and save it to the database."""
     try:
@@ -80,6 +123,7 @@ def process_html_and_json(html_path, json_path):
         html_text = soup.get_text()
 
         extracted_data = {}
+        extracted_data["content"] = clean_main_text(html_text)
         extracted_data["process_number"] = extract_metadata("Processo:", content=html_text, soup=soup, regex=True) or "Unknown Process Number"
         extracted_data["relator"] = extract_metadata("Relator:", content=html_text, soup=soup, regex=True) or "Unknown Relator"
         extracted_data["decision"] = extract_metadata("Decisão:", content=html_text, soup=soup, regex=True) or "No Decision Provided"
