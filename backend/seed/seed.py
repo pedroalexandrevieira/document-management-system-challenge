@@ -8,19 +8,6 @@ from backend.database import db
 from backend.models import Document, Entity
 import re
 
-# Define field mapping for Portuguese to English schema
-FIELD_MAPPING = {
-    "processo": "process_number",
-    "relator": "relator",
-    "tribunal": "court",
-    "decisão": "decision",
-    "data": "date",
-    "descritores": "tags",
-    "sumário": "summary",
-    "conteúdo": "content",
-    "título": "title"
-}
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
@@ -53,7 +40,7 @@ def extract_title(soup):
 
 def extract_summary(soup):
     """Extract summary from the HTML."""
-    element = soup.find(string=lambda text: isinstance(text, str) and "Sumário :" in text)
+    element = soup.find(string=lambda text: isinstance(text, str) and "Sumário:" in text)
     if element:
         next_element = element.find_next("font")
         return next_element.get_text(strip=True) if next_element else "No Summary"
@@ -61,7 +48,21 @@ def extract_summary(soup):
 
 def extract_court(soup):
     """Extract court from the HTML."""
-    return "Supremo Tribunal de Justiça"  # Hardcoded as per original requirement
+    element = soup.find(string=lambda text: isinstance(text, str) and "Tribunal:" in text)
+    if element:
+        next_element = element.find_next("font")
+        return next_element.get_text(strip=True) if next_element else "Supremo Tribunal de Justiça"
+    return "Supremo Tribunal de Justiça"
+
+def extract_tags(soup):
+    """Extract tags (Descritores) from the HTML."""
+    element = soup.find(string=lambda text: isinstance(text, str) and "Descritores:" in text)
+    if element:
+        next_element = element.find_next("font")
+        if next_element:
+            # Replace <br> with commas for a clean list of tags
+            return next_element.get_text(strip=True).replace('<br>', ', ')
+    return "No Tags"
 
 def extract_created_at():
     """Return the current timestamp as created_at."""
@@ -92,7 +93,7 @@ def process_html_and_json(html_path, json_path):
         else:
             extracted_data["date"] = None
 
-        extracted_data["tags"] = extract_metadata("Descritores:", content=html_text, soup=soup, regex=False) or "No Tags"
+        extracted_data["tags"] = extract_tags(soup)
         extracted_data["summary"] = extract_summary(soup)
         extracted_data["content"] = soup.get_text(strip=True)
         extracted_data["title"] = extract_title(soup)
