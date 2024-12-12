@@ -46,6 +46,19 @@ def extract_metadata(label, content, soup, regex=False):
                 return next_element.get_text(strip=True)
         return None
 
+def extract_title(soup):
+    """Extract title from HTML."""
+    title_tag = soup.find("title")
+    return title_tag.get_text(strip=True) if title_tag else "Untitled Document"
+
+def extract_summary(soup):
+    """Extract summary from the HTML."""
+    element = soup.find(string=lambda text: isinstance(text, str) and "Sumário :" in text)
+    if element:
+        next_element = element.find_next("font")
+        return next_element.get_text(strip=True) if next_element else "No Summary"
+    return "No Summary"
+
 def process_html_and_json(html_path, json_path):
     """Processes an HTML and JSON file to extract document data and save it to the database."""
     try:
@@ -72,8 +85,9 @@ def process_html_and_json(html_path, json_path):
             extracted_data["date"] = None
 
         extracted_data["tags"] = extract_metadata("Descritores:", content=html_text, soup=soup, regex=False) or "No Tags"
-        extracted_data["summary"] = extract_metadata("Sumário :", content=html_text, soup=soup, regex=False) or "No Summary"
+        extracted_data["summary"] = extract_summary(soup)
         extracted_data["content"] = soup.get_text(strip=True)
+        extracted_data["title"] = extract_title(soup)
 
         # Parse the JSON file for entities
         with open(json_path, 'r', encoding='utf-8') as f:
