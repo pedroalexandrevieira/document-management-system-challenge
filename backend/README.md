@@ -152,6 +152,7 @@ When processing `doc1.html` and `doc1.json`:
     {
       "id": 1,
       "process_number": "12345",
+      "title": "Court Ruling Title",
       "relator": "Relator Name",
       "court": "Supreme Court",
       "decision": "Decision text",
