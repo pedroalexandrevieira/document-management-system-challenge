@@ -59,6 +59,14 @@ def extract_summary(soup):
         return next_element.get_text(strip=True) if next_element else "No Summary"
     return "No Summary"
 
+def extract_court(soup):
+    """Extract court from the HTML."""
+    return "Supremo Tribunal de Justiça"  # Hardcoded as per original requirement
+
+def extract_created_at():
+    """Return the current timestamp as created_at."""
+    return datetime.now()
+
 def process_html_and_json(html_path, json_path):
     """Processes an HTML and JSON file to extract document data and save it to the database."""
     try:
@@ -88,6 +96,8 @@ def process_html_and_json(html_path, json_path):
         extracted_data["summary"] = extract_summary(soup)
         extracted_data["content"] = soup.get_text(strip=True)
         extracted_data["title"] = extract_title(soup)
+        extracted_data["court"] = extract_court(soup)
+        extracted_data["created_at"] = extract_created_at()
 
         # Parse the JSON file for entities
         with open(json_path, 'r', encoding='utf-8') as f:
@@ -106,12 +116,13 @@ def process_html_and_json(html_path, json_path):
                 process_number=extracted_data.get("process_number", ""),
                 title=extracted_data.get("title", "Untitled Document"),
                 relator=extracted_data.get("relator", ""),
-                court="Supremo Tribunal de Justiça",
+                court=extracted_data.get("court", ""),
                 decision=extracted_data.get("decision", ""),
                 date=extracted_data.get("date"),
                 tags=extracted_data.get("tags", ""),
                 summary=extracted_data.get("summary", ""),
-                content=extracted_data.get("content", "")
+                content=extracted_data.get("content", ""),
+                created_at=extracted_data.get("created_at")
             )
             db.session.add(doc)
             db.session.commit()
