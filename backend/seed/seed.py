@@ -14,14 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
 db.init_app(app)
 
 def extract_metadata(label, content, soup, regex=False):
-    """
-    Extract metadata from the content based on a label.
-    :param label: The label to look for (e.g., "Processo:").
-    :param content: The content to search within.
-    :param soup: BeautifulSoup object for HTML parsing.
-    :param regex: Whether to use regular expressions for searching.
-    :return: Extracted metadata or None if not found.
-    """
+    """Extract metadata from content based on a label."""
     if regex:
         match = re.search(rf"{label}\s*(.+)", content, re.IGNORECASE)
         return match.group(1).strip() if match else None
@@ -40,11 +33,19 @@ def extract_title(soup):
 
 def extract_summary(soup):
     """Extract summary from the HTML."""
-    element = soup.find(string=lambda text: isinstance(text, str) and "Sumário:" in text)
-    if element:
-        next_element = element.find_next("font")
-        return next_element.get_text(strip=True) if next_element else "No Summary"
-    return "No Summary"
+    # Variations of the label
+    summary_labels = ["Sumário", "Sumario", "Sum�rio"]
+    for label in summary_labels:
+        # Find the element containing the label
+        element = soup.find(string=lambda text: isinstance(text, str) and label in text)
+        if element:
+            # Locate the nearest sibling or child elements for content
+            parent = element.find_parent("td")
+            if parent:
+                content = parent.find_next("td")
+                if content:
+                    return content.get_text(strip=True)
+    return "No Summary Found"
 
 def extract_court(soup):
     """Extract court from the HTML."""
@@ -56,13 +57,19 @@ def extract_court(soup):
 
 def extract_tags(soup):
     """Extract tags (Descritores) from the HTML."""
-    element = soup.find(string=lambda text: isinstance(text, str) and "Descritores:" in text)
-    if element:
-        next_element = element.find_next("font")
-        if next_element:
-            # Replace <br> with commas for a clean list of tags
-            return next_element.get_text(strip=True).replace('<br>', ', ')
-    return "No Tags"
+    descritores_labels = ["Descritores:", "Descritor:", "Descri�ores", "Descri��es"]
+    for label in descritores_labels:
+        element = soup.find(string=lambda text: isinstance(text, str) and label in text)
+        if element:
+            next_element = element.find_next("font")
+            if next_element:
+                # Replace <br> tags with commas and clean up
+                return next_element.get_text(strip=True).replace('<br>', ', ').replace('\n', ', ')
+    # Fallback: Broader search for descriptors in the HTML
+    descritores_section = soup.find_all(string=re.compile("Descr[a-z]+", re.IGNORECASE))
+    if descritores_section:
+        return descritores_section[0].strip()
+    return "No Tags Found"
 
 def extract_created_at():
     """Return the current timestamp as created_at."""
@@ -71,13 +78,11 @@ def extract_created_at():
 def process_html_and_json(html_path, json_path):
     """Processes an HTML and JSON file to extract document data and save it to the database."""
     try:
-        # Parse the HTML file
         with open(html_path, 'r', encoding='ISO-8859-1') as f:
             html_content = f.read()
         soup = BeautifulSoup(html_content, 'html.parser')
-        html_text = soup.get_text()  # Extract raw text from the HTML
+        html_text = soup.get_text()
 
-        # Extract metadata using FIELD_MAPPING and custom logic
         extracted_data = {}
         extracted_data["process_number"] = extract_metadata("Processo:", content=html_text, soup=soup, regex=True) or "Unknown Process Number"
         extracted_data["relator"] = extract_metadata("Relator:", content=html_text, soup=soup, regex=True) or "Unknown Relator"
@@ -100,18 +105,16 @@ def process_html_and_json(html_path, json_path):
         extracted_data["court"] = extract_court(soup)
         extracted_data["created_at"] = extract_created_at()
 
-        # Parse the JSON file for entities
         with open(json_path, 'r', encoding='utf-8') as f:
             json_content = json.load(f)
 
-        if isinstance(json_content, list):  # Root-level list structure
+        if isinstance(json_content, list):
             entities_data = json_content
-        elif isinstance(json_content, dict):  # Root-level dictionary structure
+        elif isinstance(json_content, dict):
             entities_data = json_content.get('entities', [])
         else:
             raise ValueError(f"Unexpected JSON structure in file: {json_path}")
 
-        # Save document and entities to the database
         with app.app_context():
             doc = Document(
                 process_number=extracted_data.get("process_number", ""),
@@ -128,7 +131,6 @@ def process_html_and_json(html_path, json_path):
             db.session.add(doc)
             db.session.commit()
 
-            # Save associated entities
             for ent in entities_data:
                 entity = Entity(
                     document_id=doc.id,
@@ -145,15 +147,12 @@ def process_html_and_json(html_path, json_path):
         print(f"Error processing {html_path} and {json_path}: {e}")
 
 if __name__ == "__main__":
-    # Directories containing HTML and JSON files
     html_dir = './backend/seed/html/'
     json_dir = './backend/seed/json/'
 
-    # Create database tables
     with app.app_context():
         db.create_all()
 
-    # Process all files in the directories
     for html_file in os.listdir(html_dir):
         if html_file.endswith('.html'):
             html_path = os.path.join(html_dir, html_file)
