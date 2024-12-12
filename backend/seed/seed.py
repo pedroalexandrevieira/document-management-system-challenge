@@ -6,6 +6,7 @@ from flask import Flask
 from backend.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
 from backend.database import db
 from backend.models import Document, Entity
+import re
 
 # Define field mapping for Portuguese to English schema
 FIELD_MAPPING = {
@@ -14,7 +15,7 @@ FIELD_MAPPING = {
     "tribunal": "court",
     "decisão": "decision",
     "data": "date",
-    "descritores": "tags",  # Tags field added for metadata
+    "descritores": "tags",
     "sumário": "summary",
     "conteúdo": "content",
     "título": "title"
@@ -25,68 +26,97 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
 db.init_app(app)
 
+def extract_metadata(label, content, soup, regex=False):
+    """
+    Extract metadata from the content based on a label.
+    :param label: The label to look for (e.g., "Processo:").
+    :param content: The content to search within.
+    :param soup: BeautifulSoup object for HTML parsing.
+    :param regex: Whether to use regular expressions for searching.
+    :return: Extracted metadata or None if not found.
+    """
+    if regex:
+        match = re.search(rf"{label}\s*(.+)", content, re.IGNORECASE)
+        return match.group(1).strip() if match else None
+    else:
+        element = soup.find(string=lambda text: isinstance(text, str) and label in text)
+        if element:
+            next_element = element.find_next("font")
+            if next_element:
+                return next_element.get_text(strip=True)
+        return None
 
 def process_html_and_json(html_path, json_path):
     """Processes an HTML and JSON file to extract document data and save it to the database."""
-    # Parse the HTML file
-    with open(html_path, 'r', encoding='ISO-8859-1') as f:
-        html_content = f.read()
-    soup = BeautifulSoup(html_content, 'html.parser')
+    try:
+        # Parse the HTML file
+        with open(html_path, 'r', encoding='ISO-8859-1') as f:
+            html_content = f.read()
+        soup = BeautifulSoup(html_content, 'html.parser')
+        html_text = soup.get_text()  # Extract raw text from the HTML
 
-    # Extract metadata using FIELD_MAPPING
-    extracted_data = {}
-    for pt_field, en_field in FIELD_MAPPING.items():
-        element = soup.select_one(f'#{pt_field}') or soup.select_one(f'.{pt_field}')
-        extracted_data[en_field] = element.get_text(strip=True) if element else None
+        # Extract metadata using FIELD_MAPPING and custom logic
+        extracted_data = {}
+        extracted_data["process_number"] = extract_metadata("Processo:", content=html_text, soup=soup, regex=True) or "Unknown Process Number"
+        extracted_data["relator"] = extract_metadata("Relator:", content=html_text, soup=soup, regex=True) or "Unknown Relator"
+        extracted_data["decision"] = extract_metadata("Decisão:", content=html_text, soup=soup, regex=True) or "No Decision Provided"
+        date_str = extract_metadata("Data do Acordão:", content=html_text, soup=soup, regex=True)
 
-    # Parse the date field
-    date_str = extracted_data.get("date", "")
-    if date_str:
-        try:
-            extracted_data["date"] = datetime.strptime(date_str, '%m/%d/%Y')
-        except ValueError:
-            print(f"Error parsing date: {date_str}")
+        if date_str:
+            try:
+                extracted_data["date"] = datetime.strptime(date_str, '%d-%m-%Y')
+            except ValueError:
+                print(f"Error parsing date: {date_str}")
+                extracted_data["date"] = None
+        else:
             extracted_data["date"] = None
 
-    # Extract main text as fallback
-    extracted_data["content"] = (
-        soup.select_one('#content').get_text(strip=True)
-        if soup.select_one('#content') else soup.get_text(strip=True)
-    )
+        extracted_data["tags"] = extract_metadata("Descritores:", content=html_text, soup=soup, regex=False) or "No Tags"
+        extracted_data["summary"] = extract_metadata("Sumário :", content=html_text, soup=soup, regex=False) or "No Summary"
+        extracted_data["content"] = soup.get_text(strip=True)
 
-    # Parse the JSON file for entities
-    with open(json_path, 'r', encoding='utf-8') as f:
-        entities_data = json.load(f).get('entities', [])
+        # Parse the JSON file for entities
+        with open(json_path, 'r', encoding='utf-8') as f:
+            json_content = json.load(f)
 
-    # Save document and entities to the database
-    with app.app_context():
-        doc = Document(
-            process_number=extracted_data.get("process_number", ""),
-            title=extracted_data.get("title", ""),
-            relator=extracted_data.get("relator", ""),
-            court=extracted_data.get("court", ""),
-            decision=extracted_data.get("decision", ""),
-            date=extracted_data.get("date"),
-            tags=extracted_data.get("tags", ""),  # Ensure tags are stored correctly
-            summary=extracted_data.get("summary", ""),
-            content=extracted_data.get("content", "")
-        )
-        db.session.add(doc)
-        db.session.commit()
+        if isinstance(json_content, list):  # Root-level list structure
+            entities_data = json_content
+        elif isinstance(json_content, dict):  # Root-level dictionary structure
+            entities_data = json_content.get('entities', [])
+        else:
+            raise ValueError(f"Unexpected JSON structure in file: {json_path}")
 
-        # Save associated entities
-        for ent in entities_data:
-            entity = Entity(
-                document_id=doc.id,
-                name=ent['name'],
-                label=ent.get('label', ''),
-                url=ent.get('url', '')
+        # Save document and entities to the database
+        with app.app_context():
+            doc = Document(
+                process_number=extracted_data.get("process_number", ""),
+                title=extracted_data.get("title", "Untitled Document"),
+                relator=extracted_data.get("relator", ""),
+                court="Supremo Tribunal de Justiça",
+                decision=extracted_data.get("decision", ""),
+                date=extracted_data.get("date"),
+                tags=extracted_data.get("tags", ""),
+                summary=extracted_data.get("summary", ""),
+                content=extracted_data.get("content", "")
             )
-            db.session.add(entity)
+            db.session.add(doc)
+            db.session.commit()
 
-        db.session.commit()
-        print(f"Seeded document with ID: {doc.id}")
+            # Save associated entities
+            for ent in entities_data:
+                entity = Entity(
+                    document_id=doc.id,
+                    name=ent['name'],
+                    label=ent.get('label', ''),
+                    url=ent.get('url', '')
+                )
+                db.session.add(entity)
 
+            db.session.commit()
+            print(f"Seeded document with ID: {doc.id}")
+
+    except Exception as e:
+        print(f"Error processing {html_path} and {json_path}: {e}")
 
 if __name__ == "__main__":
     # Directories containing HTML and JSON files
