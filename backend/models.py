@@ -6,7 +6,6 @@ class Document(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # id (serial4)
     process_number = db.Column(db.String(255))  # process_number (varchar(255))
-    title = db.Column(db.String(255))  # title (varchar(255))
     summary = db.Column(db.Text)  # summary (text)
     content = db.Column(db.Text)  # content (text)
     relator = db.Column(db.String(255))  # relator (varchar(255))

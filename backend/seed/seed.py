@@ -26,11 +26,6 @@ def extract_metadata(label, content, soup, regex=False):
                 return next_element.get_text(strip=True)
         return None
 
-def extract_title(soup):
-    """Extract title from HTML."""
-    title_tag = soup.find("title")
-    return title_tag.get_text(strip=True) if title_tag else "Untitled Document"
-
 def extract_summary(soup):
     """Extract summary from the HTML."""
     # Variations of the label
@@ -57,18 +52,19 @@ def extract_court(soup):
 
 def extract_tags(soup):
     """Extract tags (Descritores) from the HTML."""
-    descritores_labels = ["Descritores:", "Descritor:", "Descri�ores", "Descri��es"]
-    for label in descritores_labels:
+    # Variations of the label
+    tag_labels = ["Descritores", "Descritor", "Descrit�res"]
+    for label in tag_labels:
+        # Find the element containing the label
         element = soup.find(string=lambda text: isinstance(text, str) and label in text)
         if element:
-            next_element = element.find_next("font")
-            if next_element:
-                # Replace <br> tags with commas and clean up
-                return next_element.get_text(strip=True).replace('<br>', ', ').replace('\n', ', ')
-    # Fallback: Broader search for descriptors in the HTML
-    descritores_section = soup.find_all(string=re.compile("Descr[a-z]+", re.IGNORECASE))
-    if descritores_section:
-        return descritores_section[0].strip()
+            # Locate the nearest sibling or child elements for content
+            parent = element.find_parent("td")
+            if parent:
+                content = parent.find_next("td")
+                if content:
+                    # Replace <br> tags with commas
+                    return content.get_text(strip=True).replace("\n", ", ")
     return "No Tags Found"
 
 def extract_created_at():
@@ -101,7 +97,6 @@ def process_html_and_json(html_path, json_path):
         extracted_data["tags"] = extract_tags(soup)
         extracted_data["summary"] = extract_summary(soup)
         extracted_data["content"] = soup.get_text(strip=True)
-        extracted_data["title"] = extract_title(soup)
         extracted_data["court"] = extract_court(soup)
         extracted_data["created_at"] = extract_created_at()
 
@@ -118,7 +113,6 @@ def process_html_and_json(html_path, json_path):
         with app.app_context():
             doc = Document(
                 process_number=extracted_data.get("process_number", ""),
-                title=extracted_data.get("title", "Untitled Document"),
                 relator=extracted_data.get("relator", ""),
                 court=extracted_data.get("court", ""),
                 decision=extracted_data.get("decision", ""),

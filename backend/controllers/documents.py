@@ -5,7 +5,7 @@ from database import db
 
 def get_documents():
     docs = Document.query.with_entities(
-        Document.id, Document.process_number, Document.tribunal, Document.summary, Document.title
+        Document.id, Document.process_number, Document.tribunal, Document.summary
     ).all()
     result = []
     for d in docs:
@@ -14,7 +14,6 @@ def get_documents():
             "process_number": d.process_number,
             "tribunal": d.tribunal,
             "summary": d.summary,
-            "title": d.title,
         })
     return jsonify(result), 200
 
@@ -28,7 +27,6 @@ def get_document_by_id(id):
     data = {
         "id": doc.id,
         "process_number": doc.process_number,
-        "title": doc.title,
         "relator": doc.relator,
         "tribunal": doc.tribunal,
         "decision": doc.decision,
