@@ -57,18 +57,19 @@ def extract_court(soup):
 
 def extract_tags(soup):
     """Extract tags (Descritores) from the HTML."""
-    descritores_labels = ["Descritores:", "Descritor:", "Descri�ores", "Descri��es"]
-    for label in descritores_labels:
+    # Variations of the label
+    tag_labels = ["Descritores", "Descritor", "Descrit�res"]
+    for label in tag_labels:
+        # Find the element containing the label
         element = soup.find(string=lambda text: isinstance(text, str) and label in text)
         if element:
-            next_element = element.find_next("font")
-            if next_element:
-                # Replace <br> tags with commas and clean up
-                return next_element.get_text(strip=True).replace('<br>', ', ').replace('\n', ', ')
-    # Fallback: Broader search for descriptors in the HTML
-    descritores_section = soup.find_all(string=re.compile("Descr[a-z]+", re.IGNORECASE))
-    if descritores_section:
-        return descritores_section[0].strip()
+            # Locate the nearest sibling or child elements for content
+            parent = element.find_parent("td")
+            if parent:
+                content = parent.find_next("td")
+                if content:
+                    # Replace <br> tags with commas
+                    return content.get_text(strip=True).replace("\n", ", ")
     return "No Tags Found"
 
 def extract_created_at():
