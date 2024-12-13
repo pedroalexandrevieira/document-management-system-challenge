@@ -1,4 +1,4 @@
-from backend.database import db
+from database import db
 from sqlalchemy import Date, TIMESTAMP
 
 class Document(db.Model):
@@ -10,7 +10,7 @@ class Document(db.Model):
     summary = db.Column(db.Text)  # summary (text)
     content = db.Column(db.Text)  # content (text)
     relator = db.Column(db.String(255))  # relator (varchar(255))
-    court = db.Column(db.String(255))  # tribunal (varchar(255))
+    court = db.Column(db.String(255))  # court (varchar(255))
     decision = db.Column(db.String(255))  # decision (varchar(255))
     date = db.Column(Date)  # date (date)
     created_at = db.Column(TIMESTAMP)  # created_at (timestamp)

@@ -1,24 +1,28 @@
-from flask import jsonify
-from models import Document
+from flask import Blueprint, jsonify
 from database import db
 
+api_blueprint = Blueprint('api', __name__)
 
+@api_blueprint.route('/documents', methods=['GET'])
 def get_documents():
+    from models import Document 
     docs = Document.query.with_entities(
-        Document.id, Document.process_number, Document.tribunal, Document.summary, Document.title
+        Document.id, Document.process_number, Document.court, Document.summary, Document.title
     ).all()
     result = []
     for d in docs:
         result.append({
             "id": d.id,
             "process_number": d.process_number,
-            "tribunal": d.tribunal,
+            "court": d.court,
             "summary": d.summary,
             "title": d.title,
         })
     return jsonify(result), 200
 
+@api_blueprint.route('/documents/<int:id>', methods=['GET'])
 def get_document_by_id(id):
+    from models import Document 
     doc = Document.query.filter_by(id=id).first()
     if not doc:
         return jsonify({"error": "Document not found"}), 404
@@ -30,7 +34,7 @@ def get_document_by_id(id):
         "process_number": doc.process_number,
         "title": doc.title,
         "relator": doc.relator,
-        "tribunal": doc.tribunal,
+        "court": doc.court,
         "decision": doc.decision,
         "date": doc.date.isoformat() if doc.date else None,
         "summary": doc.summary,
@@ -40,7 +44,9 @@ def get_document_by_id(id):
     }
     return jsonify(data), 200
 
+@api_blueprint.route('/documents/<int:id>', methods=['DELETE'])
 def delete_document(id):
+    from models import Document 
     doc = Document.query.filter_by(id=id).first()
     if not doc:
         return jsonify({"error": "Document not found"}), 404

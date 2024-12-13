@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from flask import Flask
 from backend.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
-from backend.database import db
+from database import db
 from backend.models import Document, Entity
 import re
 

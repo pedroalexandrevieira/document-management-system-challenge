@@ -1,11 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DocumentListPage from './pages/DocumentListPage';
-import DocumentPage from './pages/DocumentPage';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+const App = () => (
   <Router>
     <Routes>
       <Route path="/" element={<DocumentListPage />} />
@@ -13,3 +10,5 @@ root.render(
     </Routes>
   </Router>
 );
+
+export default App;
