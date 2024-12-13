@@ -30,7 +30,7 @@ const DocumentPage = () => {
         <Card.Header>{document.title || 'Untitled Document'}</Card.Header>
         <Card.Body>
           <p><strong>Processo:</strong> {document.process_number || 'N/A'}</p>
-          <p><strong>Tribunal:</strong> {document.tribunal || 'N/A'}</p>
+          <p><strong>Tribunal:</strong> {document.court || 'N/A'}</p>
           <p><strong>Sumário:</strong> {document.summary || 'N/A'}</p>
           <p><strong>Descritores:</strong> {document.tags || 'N/A'}</p>
           <p><strong>Decisão:</strong> {document.decision || 'N/A'}</p>
