@@ -9,7 +9,7 @@ const DocumentListPage = () => {
   // Fetch all documents
   const fetchDocuments = async () => {
     try {
-      const response = await axios.get('/api/documents'); // Adjust API path if necessary
+      const response = await axios.get('/api/documents'); 
       setDocuments(response.data);
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -20,7 +20,7 @@ const DocumentListPage = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this document?')) {
       try {
-        await axios.delete(`/api/documents/${id}`); // Adjust API path if necessary
+        await axios.delete(`/api/documents/${id}`);
         setDocuments(documents.filter((doc) => doc.id !== id));
       } catch (error) {
         console.error('Error deleting document:', error);
@@ -54,7 +54,7 @@ const DocumentListPage = () => {
           {documents.map((doc) => (
             <tr key={doc.id}>
               <td>{doc.process_number || 'N/A'}</td>
-              <td>{doc.tribunal || 'N/A'}</td>
+              <td>{doc.court || 'N/A'}</td>
               <td>{doc.summary || 'N/A'}</td>
               <td>{doc.tags || 'N/A'}</td>
               <td>

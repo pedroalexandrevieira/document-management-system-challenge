@@ -9,7 +9,7 @@ const DocumentPage = () => {
   useEffect(() => {
     const fetchDocument = async () => {
       try {
-        const response = await axios.get(`/api/documents/${id}`); // Adjust API path if necessary
+        const response = await axios.get(`/api/documents/${id}`);
         setDocument(response.data);
       } catch (error) {
         console.error('Error fetching document:', error);
@@ -27,7 +27,7 @@ const DocumentPage = () => {
     <div>
       <h1>{document.title || 'Untitled Document'}</h1>
       <p><strong>Processo:</strong> {document.process_number || 'N/A'}</p>
-      <p><strong>Tribunal:</strong> {document.tribunal || 'N/A'}</p>
+      <p><strong>Tribunal:</strong> {document.court || 'N/A'}</p>
       <p><strong>Sumário:</strong> {document.summary || 'N/A'}</p>
       <p><strong>Descritores:</strong> {document.tags || 'N/A'}</p>
       <p><strong>Decisão:</strong> {document.decision || 'N/A'}</p>
