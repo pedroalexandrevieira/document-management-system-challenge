@@ -8,13 +8,13 @@ const DocumentListPage = () => {
   const [documents, setDocuments] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/documents')
+    axios.get('http://localhost:5000/api/documents')
       .then((response) => setDocuments(response.data))
       .catch((error) => console.error('Error fetching documents:', error));
   }, []);
 
   const handleDelete = (id) => {
-    axios.delete(`/api/documents/${id}`)
+    axios.delete(`http://localhost:5000/api/documents/${id}`)
       .then(() => setDocuments((prev) => prev.filter((doc) => doc.id !== id)))
       .catch((error) => console.error('Error deleting document:', error));
   };

@@ -11,7 +11,7 @@ const DocumentDetail = ({ document }) => {
         <Card.Body>
           <Card.Title>{document.title || 'Untitled Document'}</Card.Title>
           <Card.Text>
-            <strong>Tribunal:</strong> {document.tribunal || 'N/A'}
+            <strong>Tribunal:</strong> {document.court || 'N/A'}
           </Card.Text>
           <Card.Text>
             <strong>Summary:</strong> {document.summary || 'No Summary Provided'}

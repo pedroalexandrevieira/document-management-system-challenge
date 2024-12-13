@@ -17,7 +17,7 @@ const DocumentList = ({ documents, handleDelete }) => {
         {documents.map((doc) => (
           <tr key={doc.id}>
             <td>{doc.process_number}</td>
-            <td>{doc.tribunal}</td>
+            <td>{doc.court}</td>
             <td>{doc.summary || 'No Summary Available'}</td>
             <td>
               <Link to={`/documents/${doc.id}`} className="btn btn-primary btn-sm me-2">
