@@ -1,43 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Container, Card } from 'react-bootstrap';
+import Header from '../components/shared/Header';
+import Footer from '../components/shared/Footer';
 
 const DocumentPage = () => {
   const { id } = useParams();
   const [document, setDocument] = useState(null);
 
   useEffect(() => {
-    const fetchDocument = async () => {
-      try {
-        const response = await axios.get(`/api/documents/${id}`);
-        setDocument(response.data);
-      } catch (error) {
-        console.error('Error fetching document:', error);
-      }
-    };
-
-    fetchDocument();
+    axios.get(`/api/documents/${id}`)
+      .then((response) => setDocument(response.data))
+      .catch((error) => console.error('Error fetching document:', error));
   }, [id]);
 
-  if (!document) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <Container className="mt-4">
-      <Card>
-        <Card.Header>{document.title || 'Untitled Document'}</Card.Header>
-        <Card.Body>
-          <p><strong>Processo:</strong> {document.process_number || 'N/A'}</p>
-          <p><strong>Tribunal:</strong> {document.court || 'N/A'}</p>
-          <p><strong>Sumário:</strong> {document.summary || 'N/A'}</p>
-          <p><strong>Descritores:</strong> {document.tags || 'N/A'}</p>
-          <p><strong>Decisão:</strong> {document.decision || 'N/A'}</p>
-          <p><strong>Conteúdo:</strong> {document.content || 'N/A'}</p>
-        </Card.Body>
-      </Card>
-    </Container>
+    <>
+      <Header />
+      <div className="container">
+        <h1>Document Details</h1>
+        <DocumentDetail document={document} />
+      </div>
+      <Footer />
+    </>
   );
 };
 
