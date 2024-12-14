@@ -3,32 +3,55 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: court_rulings
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d court_rulings"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - dms_network
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
     environment:
-      DB_HOST: db
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: court_rulings
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
     ports:
       - "5000:5000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dms_network
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    networks:
+      - dms_network
+
+volumes:
+  pg_data:
+
+networks:
+  dms_network:
