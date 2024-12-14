@@ -99,24 +99,34 @@ To set up the project, follow the detailed instructions provided in the respecti
 1. **Build the Docker Image**:
    - Navigate to the root directory of the project and run:
      ```bash
-     docker build -t dms .
+     docker-compose up --build
      ```
+    This will:
+    - Build and start the PostgreSQL, backend, and frontend services.
+    - Automatically link the containers using the Docker network.
 
-2. **Run the PostgreSQL Container**:
-   - Start a PostgreSQL container if not already running:
-     ```bash
-     docker run -d --name postgres-db -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=dms_db -p 5432:5432 postgres
-     ```
-
-3. **Run the DMS Backend Container**:
-   - Link the backend container to the PostgreSQL container:
-     ```bash
-     docker run -d -p 5000:5000 --name dms-backend --link postgres-db dms
-     ```
-
-4. **Access the Application**:
-   - Backend: `http://localhost:5000`
+2. **Access the Application**:
    - Frontend: `http://localhost:3000`
+
+**Notes**:
+
+- Environment Variables: Ensure the .env file is present in the root directory with the following configurations:
+```bash
+DB_USER=pedrovieira
+DB_PASSWORD=pedrovieira
+DB_HOST=db
+DB_NAME=court_rulings
+```
+
+- Rebuild Containers: If you make changes to the code or environment variables, rebuild the containers:
+```bash
+docker-compose up --build
+```
+
+- To stop all running containers, use:
+```bash
+docker-compose down
+```
 
 ---
 
