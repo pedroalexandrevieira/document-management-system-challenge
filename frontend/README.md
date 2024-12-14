@@ -23,23 +23,6 @@ To run this project, you need the following:
 
 ---
 
-## Installation and Development Server
-
-### Install Dependencies and Start the server:
-
-- npm install
-
-
-- npm start
-
-### Access the Application:
-
-Open your browser and navigate to:
-
-- http://localhost:3000
-
----
-
 ## Environment Variables
 
 Create a `.env` file in the root directory to configure environment-specific settings.
@@ -47,6 +30,28 @@ Create a `.env` file in the root directory to configure environment-specific set
 ### Example `.env` file:
 ```plaintext
 REACT_APP_API_BASE_URL=http://localhost:5000/api
+```
+
+---
+
+## Installation and Development Server
+
+### Install Dependencies and Start the server:
+
+```plaintext
+npm install
+```
+
+```plaintext
+npm start
+```
+
+### Access the Application:
+
+Open your browser and navigate to:
+
+```plaintext
+http://localhost:3000
 ```
 
 ---
