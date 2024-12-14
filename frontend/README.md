@@ -28,7 +28,7 @@ To run this project, you need the following:
 Create a `.env` file in the root directory to configure environment-specific settings.
 
 ### Example `.env` file:
-```plaintext
+```
 REACT_APP_API_BASE_URL=http://localhost:5000/api
 ```
 
@@ -36,23 +36,23 @@ REACT_APP_API_BASE_URL=http://localhost:5000/api
 
 ## Installation and Development Server
 
-### Install Dependencies and Start the server:
+### Steps to Run the Frontend:
 
-```plaintext
-npm install
-```
+1. **Install Dependencies**:
+   Ensure you install all required dependencies by running:
+   ```bash
+   npm install
+   ```
 
-```plaintext
-npm start
-```
+2. **Start the Development Server: After installing the dependencies, start the development server**:
+   ```bash
+   npm start
+   ```
 
-### Access the Application:
-
-Open your browser and navigate to:
-
-```plaintext
-http://localhost:3000
-```
+3. **Access the Application: Open your browser and navigate to**:
+   ```
+   http://localhost:3000
+   ```
 
 ---
 
