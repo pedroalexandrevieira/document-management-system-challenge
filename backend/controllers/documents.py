@@ -39,6 +39,7 @@ def get_document_by_id(id):
         "date": doc.date.isoformat() if doc.date else None,
         "summary": doc.summary,
         "content": doc.content,
+        "tags": doc.tags,
         "created_at": doc.created_at.isoformat() if doc.created_at else None,
         "entities": entities
     }

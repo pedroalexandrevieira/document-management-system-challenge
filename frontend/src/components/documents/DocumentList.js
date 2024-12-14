@@ -7,10 +7,10 @@ const DocumentList = ({ documents, handleDelete }) => {
     <Table striped bordered hover>
       <thead>
         <tr>
-          <th>Process Number</th>
+          <th>Processo</th>
           <th>Tribunal</th>
-          <th>Summary</th>
-          <th>Actions</th>
+          <th>Sumário</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
