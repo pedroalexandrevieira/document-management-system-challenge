@@ -112,3 +112,8 @@ python backend/seed.py
 
 Make sure to configure your .env files properly before running the app.
 For production deployment, consider additional configurations (e.g., HTTPS, scaling, environment variables).
+
+Future Enhancements
+Add unit tests for components.
+Support advanced search and filtering for documents.
+Implement pagination for large document datasets.
