@@ -1,11 +1,6 @@
 # Document Management System (DMS)
 
-This project is a full-stack **Document Management System (DMS)** for managing and analyzing court rulings. It consists of:
-
-- A **JavaScript (React)** frontend for displaying and interacting with court rulings.
-- A **Python (Flask)** backend providing RESTful APIs for CRUD operations.
-- A **PostgreSQL** database for storing court rulings and metadata.
-- **Docker** for containerized deployment and development.
+This project is a full-stack **Document Management System (DMS)** designed to streamline the management and analysis of court rulings. It enables users to view, delete, and manage court documents with ease while leveraging a powerful backend API and a scalable database.
 
 ---
 
@@ -15,6 +10,62 @@ This project is a full-stack **Document Management System (DMS)** for managing a
 - **Powerful Backend API**: Provides endpoints for **Read** and **Delete** operations on court rulings.
 - **Containerized Deployment**: Easy to deploy and scale using **Docker**.
 - **Database Seeding**: Automates initial data population for testing or development purposes.
+
+---
+
+## Design Choices
+
+1. **Frontend**:
+   - Built with **React** to provide a dynamic, component-based user interface.
+   - Uses **React Bootstrap** for responsive design and styling.
+   - **Axios** is used for efficient API communication with the backend.
+
+2. **Backend**:
+   - Built with **Flask**, a lightweight and flexible Python web framework.
+   - **SQLAlchemy** ORM simplifies database interactions and schema management.
+   - **RESTful API** design provides a clean and scalable way to interact with the database.
+
+3. **Database**:
+   - **PostgreSQL** was chosen for its robustness, scalability, and support for advanced SQL features.
+   - Relationships between documents and entities are managed through foreign keys and SQLAlchemy relationships.
+
+4. **Containerization**:
+   - **Docker** ensures consistency across development and production environments.
+   - Both frontend and backend are containerized for ease of deployment.
+
+---
+
+## Caveats and Limitations
+
+1. **Caveats**:
+   - The system supports only **Read** and **Delete** operations for court rulings. **Create** and **Update** functionality are not implemented.
+   - Backend and frontend must be configured to use the same API base URL to function correctly.
+
+2. **Limitations**:
+   - The PostgreSQL database must be running before starting the backend; otherwise, API requests will fail with a database connection error.
+   - The application does not handle advanced error scenarios like malformed requests or server timeouts.
+
+---
+
+## Potential Improvements
+
+1. **Add Unit Tests**:
+   - For both frontend and backend to improve reliability and maintainability.
+
+2. **Implement Full CRUD Functionality**:
+   - Add Create and Update endpoints to the backend for managing court rulings.
+
+3. **Enhanced Search and Filtering**:
+   - Add support for full-text search and advanced filtering in the frontend.
+
+4. **Pagination**:
+   - Implement server-side pagination to handle large datasets more efficiently.
+
+5. **Role-Based Access Control (RBAC)**:
+   - Add user roles with permissions for enhanced security.
+
+6. **CI/CD Pipelines**:
+   - Automate deployment and testing processes using tools like GitHub Actions or Jenkins.
 
 ---
 
@@ -34,57 +85,38 @@ Before setting up the project, ensure the following are installed:
 To set up the project, follow the detailed instructions provided in the respective README files:
 
 1. **Backend**:
-   - Navigate to the `backend/` directory and follow the steps in the `README.md` file to set up the Flask backend and PostgreSQL database.
+   - Navigate to the [`backend/`](./backend/) directory and follow the steps in the `README.md` file to set up the Flask backend and PostgreSQL database.
 
 2. **Frontend**:
-   - Navigate to the `frontend/` directory and follow the steps in the `README.md` file to set up the React frontend.
+   - Navigate to the [`frontend/`](./frontend/) directory and follow the steps in the `README.md` file to set up the React frontend.
 
 > **Note**: Ensure the backend is running before testing the frontend to avoid API errors.
 
+---
 
-## Future Enhancements
+## Run the Docker Image
 
-1. **Add Unit Tests**:
-   - Develop comprehensive unit tests for:
-     - Frontend components using testing libraries like Jest or React Testing Library.
-     - Backend API endpoints using tools like Pytest to ensure reliability and maintainability.
+1. **Build the Docker Image**:
+   - Navigate to the root directory of the project and run:
+     ```bash
+     docker build -t dms .
+     ```
 
-2. **Advanced Search and Filtering**:
-   - Implement powerful search functionality with support for:
-     - Filters (e.g., by date, court, tags, or relator).
-     - Full-text search for better document discovery.
-   - Improve the user experience for managing large datasets.
+2. **Run the PostgreSQL Container**:
+   - Start a PostgreSQL container if not already running:
+     ```bash
+     docker run -d --name postgres-db -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=dms_db -p 5432:5432 postgres
+     ```
 
-3. **Pagination**:
-   - Add server-side pagination for document lists to:
-     - Optimize performance for large datasets.
-     - Enhance frontend responsiveness with paginated API responses.
+3. **Run the DMS Backend Container**:
+   - Link the backend container to the PostgreSQL container:
+     ```bash
+     docker run -d -p 5000:5000 --name dms-backend --link postgres-db dms
+     ```
 
-4. **Role-Based Access Control (RBAC)**:
-   - Introduce user roles such as:
-     - **Admin**: Full access to manage documents and users.
-     - **Viewer**: Restricted access to view-only operations.
-   - Add fine-grained access permissions to enhance application security.
-
-5. **Export and Download Features**:
-   - Enable users to export documents or metadata in various formats:
-     - **PDF**: For print-friendly access.
-     - **CSV/JSON**: For data portability and analysis.
-
-6. **Improved Entity Highlighting**:
-   - Enhance the entity highlighting feature by:
-     - Allowing dynamic updates to entity labels and links.
-     - Enabling custom configurations for different types of entities.
-
-7. **Localization and Multi-Language Support**:
-   - Add localization features to:
-     - Translate the user interface into multiple languages.
-     - Support international users more effectively.
-
-8. **Enhanced Deployment Options**:
-   - Streamline deployment by:
-     - Implementing CI/CD pipelines for automated testing and deployment.
-     - Supporting cloud platforms like AWS, Azure, or Google Cloud.
+4. **Access the Application**:
+   - Backend: `http://localhost:5000`
+   - Frontend: `http://localhost:3000`
 
 ---
 
