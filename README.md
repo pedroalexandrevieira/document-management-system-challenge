@@ -101,7 +101,7 @@ To set up the project, follow the detailed instructions provided in the respecti
      ```bash
      docker-compose up --build
      ```
-    This will:
+        This will:
     - Build and start the PostgreSQL, backend, and frontend services.
     - Automatically link the containers using the Docker network.
 
