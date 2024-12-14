@@ -7,7 +7,7 @@ This is the backend for the Document Management System (DMS). It provides a REST
 ## Features
 
 - **RESTful API**:
-  - Create, Read, Update, and Delete court rulings.
+  - Read and Delete court rulings.
   - Extract metadata and entities from raw HTML and JSON files.
 - **PostgreSQL Database**:
   - Robust and scalable database for data persistence.
@@ -18,11 +18,20 @@ This is the backend for the Document Management System (DMS). It provides a REST
 
 ---
 
-## Script Functionality
+## Prerequisites
+
+To run this project, you need the following:
+
+- **Python 3.8+**: Ensure you have Python installed. [Download here](https://www.python.org/downloads/).
+- **PostgreSQL Database**: A relational database for data storage. [Get PostgreSQL](https://www.postgresql.org/download/).
+
+---
+
+## Seed Script Functionality
 
 ### 1. **HTML and JSON Processing**
 The backend processes legal documents in the form of HTML and JSON files:
-- Extracts metadata (e.g., `Processo`, `Relator`, `Tribunal`, `Data`, etc.) from HTML using `BeautifulSoup`.
+- Extracts metadata (e.g., `Processo`, `Relator`, `Tribunal`, `Summary`, `Content`, `Decision`, `Date`, `Created_at`, `Tags`, `Title`.) from HTML using `BeautifulSoup`.
 - Extracts entities (e.g., names, labels, URLs) from JSON files.
 - Matches HTML files with their corresponding JSON files based on filenames.
 - Saves processed documents and entities to the database.
@@ -33,30 +42,22 @@ The backend processes legal documents in the form of HTML and JSON files:
   - `json/` directory for JSON files.
 - Automatically logs missing or mismatched files.
 
-### 3. **CRUD Operations**
-- Provides a RESTful API for managing documents and entities:
-  - `GET /documents`: Fetch all documents.
-  - `GET /documents/<id>`: Fetch a specific document.
-  - `POST /documents`: Add a new document.
-  - `PUT /documents/<id>`: Update an existing document.
-  - `DELETE /documents/<id>`: Delete a document.
 
-### 4. **Logging and Debugging**
+### 3. **Logging and Debugging**
 - Logs all file processing, database operations, and API requests.
 - Detects and reports missing fields, incorrect formats, or database constraints.
 
 ---
 
-## Prerequisites
+## Seed Script Usage
 
-To run this project, you need the following:
+1. **Add Your Files**:  Place HTML files in the backend/seed/html/ directory. Place JSON files in the backend/seed/json/ directory.
 
-- **Python 3.8+**: Ensure you have Python installed. [Download here](https://www.python.org/downloads/).
-- **PostgreSQL Database**: A relational database for data storage. [Get PostgreSQL](https://www.postgresql.org/download/).
-- **Installed Dependencies**: Install the required Python packages listed in `requirements.txt`:
-  - Flask
-  - SQLAlchemy
-  - BeautifulSoup
+2. **Run the Batch Processor**:
+  python backend/seed/seed.py
+
+3. **Monitor Logs**:
+  Logs will display progress and any issues with file processing.
 
 ---
 
@@ -71,52 +72,41 @@ To run this project, you need the following:
   
    - pip install -r requirements.txt
   
-3. **Configure the Database**:
+3. **Configure Database**:
 
     1. **Create a .env file in the backend directory with the following configurations**:
 
-    - DB_USER=your_db_user
-    - DB_PASSWORD=your_db_password
-    - DB_HOST=localhost
-    - DB_PORT=5432
-    - DB_NAME=court_rulings
+      - DB_USER=your_db_user
+      - DB_PASSWORD=your_db_password
+      - DB_HOST=localhost
+      - DB_PORT=5432
+      - DB_NAME=court_rulings
 
-    2. **Inicialize database running the script**:
+    2. **Initialize database running the script**:
 
       ```bash
-      initialize_db.py
+      python backend/scripts/initialize_db.py
       ```
 
 5. **Run the Application**:
 
-    In directory of docuemtn_system_challenge run the follow command:
-
-    - python backend/app.py
-
+    In directory document_system_challenge run the follow command:
+    
+    ```bash
+    python backend/app.py
+    ```
 ---
 
 ## Docker Setup
 
 1. **Build the Docker Image**:
    ```bash
-   docker build -t dms-backend .
+    docker build -t dms-backend ./backend
    ```
 2. **Run the Container**:
-docker run -d -p 5000:5000 --name dms-backend dms-backend
-
----
-
-## Usage of Batch Processing
-
-1. **Add Your Files**:
-  Place HTML files in the ./seed/html/ directory.
-  Place JSON files in the ./seed/json/ directory.
-
-2. **Run the Batch Processor**:
-  python app.py
-
-3. **Monitor Logs**:
-  Logs will display progress and any issues with file processing.
+    ```bash
+      docker run -d -p 5000:5000 --name dms-backend dms-backend
+    ```
 
 ---
 
@@ -128,17 +118,7 @@ docker run -d -p 5000:5000 --name dms-backend dms-backend
 |-------------|----------------------|-----------------------------|
 | `GET`       | `/documents`         | Fetch all documents         |
 | `GET`       | `/documents/<id>`    | Fetch a specific document   |
-| `POST`      | `/documents`         | Add a new document          |
-| `PUT`       | `/documents/<id>`    | Update an existing document |
 | `DELETE`    | `/documents/<id>`    | Delete a document           |
-
-### Entity Endpoints
-
-| HTTP Method | Endpoint             | Description                 |
-|-------------|----------------------|-----------------------------|
-| `GET`       | `/entities`          | Fetch all entities          |
-| `GET`       | `/entities/<id>`     | Fetch a specific entity     |
-
 
 ---
 
@@ -146,15 +126,15 @@ docker run -d -p 5000:5000 --name dms-backend dms-backend
 
 ### Batch Processing
 
-When processing `doc1.html` and `doc1.json`:
+When processing `exemple.html` and `exemple.json`:
 
-  - Processing: doc1.html and doc1.json
+  - Processing: exemple.html and exemple.json
   - Seeded document with ID: 1
   
 
 ### API Response
 
-  -Example `GET /documents` response:
+  - Example `GET /documents` response:
 
   ```json
   [
