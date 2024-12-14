@@ -151,3 +151,20 @@ When processing `exemple.html` and `exemple.json`:
       "content": "Full document content"
     }
   ]
+  ```
+
+## Used Technologies
+
+### Backend
+- **Python (3.8+)**: Programming language used for building the backend.
+- **Flask**: Lightweight web framework for creating RESTful APIs.
+- **SQLAlchemy**: ORM (Object-Relational Mapper) for managing database operations.
+- **PostgreSQL**: Robust and scalable relational database for data persistence.
+- **BeautifulSoup**: Library for parsing HTML and extracting metadata.
+- **Dotenv**: Manages environment variables, such as database credentials, through a `.env` file.
+- **Docker**: Containerization tool to simplify setup and ensure consistency across environments.
+
+### Supporting Tools
+- **pip**: Python's package manager for installing dependencies.
+- **Postman**: Optional tool for testing and debugging API endpoints.
+- **Gunicorn**: WSGI server for deploying Flask applications in production.
