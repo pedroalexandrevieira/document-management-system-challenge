@@ -38,14 +38,14 @@ Follow these steps to set up and run the project locally or using Docker.
 ```bash
 git clone https://github.com/pedroalexandrevieira/document-management-system-challenge.git
 cd document-management-system-challenge
-
+```
 
 #### 2. Backend Setup
 
 Install Python dependencies:
 
-bash
 pip install -r requirements.txt
+
 Create a .env file in the backend directory with the following content:
 
 makefile
@@ -54,15 +54,15 @@ DB_PASSWORD=your_db_password
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=court_rulings
+
 Initialize the database:
 
-bash
 flask db init
 flask db migrate
 flask db upgrade
+
 Start the backend server:
 
-bash
 flask run
 
 

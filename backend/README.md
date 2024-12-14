@@ -62,7 +62,7 @@ To run this project, you need the following:
 
 ## Installation
 
-1. **Create a Virtual Environment**:
+1. **Create a Virtual Environment(optional)**:
    
    - python3 -m venv venv
    - source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -72,17 +72,26 @@ To run this project, you need the following:
    - pip install -r requirements.txt
   
 3. **Configure the Database**:
-  
-   - Open config.py and set SQLALCHEMY_DATABASE_URI to point to your PostgreSQL database.
 
-4. **Initialize the Database**:
-  flask shell
-  >>> from database import db
-  >>> db.create_all()
-  >>> exit()
+    1. **Create a .env file in the backend directory with the following configurations**:
 
-5.**Run the Application**:
-  flask run
+    - DB_USER=your_db_user
+    - DB_PASSWORD=your_db_password
+    - DB_HOST=localhost
+    - DB_PORT=5432
+    - DB_NAME=court_rulings
+
+    2. **Inicialize database running the script**:
+
+      ```bash
+      initialize_db.py
+      ```
+
+5. **Run the Application**:
+
+    In directory of docuemtn_system_challenge run the follow command:
+
+    - python backend/app.py
 
 ---
 
@@ -91,7 +100,7 @@ To run this project, you need the following:
 1. **Build the Docker Image**:
    ```bash
    docker build -t dms-backend .
-
+   ```
 2. **Run the Container**:
 docker run -d -p 5000:5000 --name dms-backend dms-backend
 
