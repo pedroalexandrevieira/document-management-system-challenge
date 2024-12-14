@@ -2,8 +2,8 @@
 
 This project is a full-stack **Document Management System (DMS)** for managing and analyzing court rulings. It consists of:
 
-- A **React** frontend for displaying and interacting with court rulings.
-- A **Flask** backend providing RESTful APIs for CRUD operations.
+- A **JavaScript (React)** frontend for displaying and interacting with court rulings.
+- A **Python (Flask)** backend providing RESTful APIs for CRUD operations.
 - A **PostgreSQL** database for storing court rulings and metadata.
 - **Docker** for containerized deployment and development.
 
@@ -11,109 +11,83 @@ This project is a full-stack **Document Management System (DMS)** for managing a
 
 ## Features
 
-- User-friendly interface for managing court rulings.
-- Powerful backend API for CRUD operations.
-- Containerized deployment for easy scalability.
-- Database seeding for initial data population.
+- **User-Friendly Interface**: View and manage court rulings with ease.
+- **Powerful Backend API**: Provides endpoints for **Read** and **Delete** operations on court rulings.
+- **Containerized Deployment**: Easy to deploy and scale using **Docker**.
+- **Database Seeding**: Automates initial data population for testing or development purposes.
+
+---
+
+## Prerequisites
+
+Before setting up the project, ensure the following are installed:
+
+- **Node.js** (v14+): Required for the frontend. [Download Node.js](https://nodejs.org/)
+- **Python** (v3.8+): Required for the backend. [Download Python](https://www.python.org/)
+- **PostgreSQL**: Required for database storage. [Download PostgreSQL](https://www.postgresql.org/)
+- **Docker** (Optional): For containerized deployment. [Download Docker](https://www.docker.com/)
 
 ---
 
 ## Installation and Setup
 
-Follow these steps to set up and run the project locally or using Docker.
+To set up the project, follow the detailed instructions provided in the respective README files:
 
-### Prerequisites
+1. **Backend**:
+   - Navigate to the `backend/` directory and follow the steps in the `README.md` file to set up the Flask backend and PostgreSQL database.
 
-- **Node.js**: v16+
-- **Python**: v3.9+
-- **PostgreSQL**: Ensure it’s installed and running.
-- **Docker** (optional, for containerized setup)
+2. **Frontend**:
+   - Navigate to the `frontend/` directory and follow the steps in the `README.md` file to set up the React frontend.
+
+> **Note**: Ensure the backend is running before testing the frontend to avoid API errors.
+
+
+## Future Enhancements
+
+1. **Add Unit Tests**:
+   - Develop comprehensive unit tests for:
+     - Frontend components using testing libraries like Jest or React Testing Library.
+     - Backend API endpoints using tools like Pytest to ensure reliability and maintainability.
+
+2. **Advanced Search and Filtering**:
+   - Implement powerful search functionality with support for:
+     - Filters (e.g., by date, court, tags, or relator).
+     - Full-text search for better document discovery.
+   - Improve the user experience for managing large datasets.
+
+3. **Pagination**:
+   - Add server-side pagination for document lists to:
+     - Optimize performance for large datasets.
+     - Enhance frontend responsiveness with paginated API responses.
+
+4. **Role-Based Access Control (RBAC)**:
+   - Introduce user roles such as:
+     - **Admin**: Full access to manage documents and users.
+     - **Viewer**: Restricted access to view-only operations.
+   - Add fine-grained access permissions to enhance application security.
+
+5. **Export and Download Features**:
+   - Enable users to export documents or metadata in various formats:
+     - **PDF**: For print-friendly access.
+     - **CSV/JSON**: For data portability and analysis.
+
+6. **Improved Entity Highlighting**:
+   - Enhance the entity highlighting feature by:
+     - Allowing dynamic updates to entity labels and links.
+     - Enabling custom configurations for different types of entities.
+
+7. **Localization and Multi-Language Support**:
+   - Add localization features to:
+     - Translate the user interface into multiple languages.
+     - Support international users more effectively.
+
+8. **Enhanced Deployment Options**:
+   - Streamline deployment by:
+     - Implementing CI/CD pipelines for automated testing and deployment.
+     - Supporting cloud platforms like AWS, Azure, or Google Cloud.
 
 ---
 
-### Steps
+## Final Notes
 
-#### 1. Clone the Repository
-
-```bash
-git clone https://github.com/pedroalexandrevieira/document-management-system-challenge.git
-cd document-management-system-challenge
-```
-
-#### 2. Backend Setup
-
-Install Python dependencies:
-
-pip install -r requirements.txt
-
-Create a .env file in the backend directory with the following content:
-
-makefile
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=court_rulings
-
-Initialize the database:
-
-flask db init
-flask db migrate
-flask db upgrade
-
-Start the backend server:
-
-flask run
-
-
-#### 3. Frontend Setup
-
-Navigate to the frontend directory:
-
-bash
-cd ../frontend
-Install Node.js dependencies:
-
-bash
-npm install
-Create a .env file in the frontend directory with the following content:
-
-arduino
-REACT_APP_BACKEND_URL=http://localhost:5000
-Start the frontend development server:
-
-bash
-npm start
-
-
-#### 4. Run with Docker (Optional)
-
-Build and start all services (frontend, backend, and database):
-
-bash
-docker-compose up --build
-Access the application:
-
-Frontend: http://localhost:3000
-Backend: http://localhost:5000
-
-
-#### 5. Database Seeding
-
-Place raw HTML and JSON files in the appropriate directory.
-
-Run the database seeding script:
-
-bash
-python backend/seed.py
-
-
-#### Notes
-
-Make sure to configure your .env files properly before running the app.
-For production deployment, consider additional configurations (e.g., HTTPS, scaling, environment variables).
-
-Future Enhancements
-Add unit tests for components.
-Support advanced search and filtering for documents.
-Implement pagination for large document datasets.
+This project aims to simplify the management and analysis of court rulings with a scalable, modern tech stack.
